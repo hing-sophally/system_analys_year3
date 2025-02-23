@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User; // Ensure User model is included
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -14,41 +16,76 @@ class UserController extends Controller
         return view('admin.user.user', compact('module', 'users'));
     }
 
-    public function addUser(Request $request)
-    {
-        $module = 'user';
-        return view('admin.user.add', compact('module'));
-    }
-
-    public function editUser(Request $request, $id) // Accept $id parameter
-    {
-        $module = 'user';
-        $user = User::findOrFail($id); // Fetch user by ID
-        return view('admin.user.edit', compact('module', 'user'));
-    }
-
-    public function deleteUser(Request $request, $id) // Accept $id parameter
-    {
-        $module = 'user';
-        $user = User::findOrFail($id); // Fetch user by ID
-        return view('admin.user.delete', compact('module', 'user'));
-    }
     public function fetchUser()
     {
-        $users = User::paginate(10);
+        // $users = User::paginate(10);
+        $data = DB::table('users')->select('*')->get();
     
         // Access only the data part (users) and return it as JSON
         // dd(response()->json($users->items()));
-        return response()->json($users->items());
+        return response()->json($data);
     }
     
-    public function dodeleteUser($id)
-    {
-        $user = User::find($id);
-        if ($user) {
-            $user->delete();
-            return response()->json(['message' => 'User deleted successfully']);
+    public function deleteUser(Request $request) // Use Request instead of Resqusst
+        {
+            $user_id = $request->id;
+            $res = DB::table('users')->where('id', $user_id)->delete();
+            return response()->json(['res' => $res, 'message' => 'User deleted successfully']);
         }
-        return response()->json(['message' => 'User not found'], 404);
+
+    public function edituser( Request $request) {
+        // @dd($request->all());
+
+        $id = $request-> id;
+        $name = $request->name;
+        $email = $request->email;
+        $gender = $request->gender;
+        $role = $request->role;
+
+        // @dd($id , $user_name, $email, $role);
+
+        $user = DB::table('users')
+        ->where('id', $id)
+        ->update(
+            [
+                'name' => $name,
+                'email' => $email,
+                'gender' => $gender,
+                'role' => $role,
+            ]   
+        );
+        // @dd($user)
+        $new_update = DB::table('users')->where('id', $id)->first();
+        return response()->json([$new_update, 'message' => 'User updated successfully']);
+        // return redirect()->route('admin.user');
+
     }
+    public function adduser( Request $request) {
+        // @dd($request->all());
+
+        $name = $request->name;
+        $email = $request->email;
+        $password = $request->password;
+        $gender = $request->gender;
+        $role = $request->role;
+
+        // @dd($id , $user_name, $email, $role);
+
+        $user = DB::table('users')
+        ->insert(
+            [
+                'name' => $name,
+                'email' => $email,
+                'gender' => $gender,
+                'password' => Hash::make($password),
+                'role' => $role,
+            ]   
+        );
+        // @dd($user)
+        return response()->json([$user, 'message' => 'User updated successfully']);
+        // return redirect()->route('admin.user');
+
+    }
+        
+
 }

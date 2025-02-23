@@ -8,7 +8,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Users Page</h1>
+                        <h1 class="m-0 font-wiegth-bold ">Users Page</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -32,20 +32,23 @@
                         <form action="" method="POST">
                           <div class="form-group">
                             <label for="username">Username</label>
-                            <input type="text" class="form-control" id="username" name="username" required>
+                            <input v-model="form.name" type="text" class="form-control" id="username" name="username" required>
                           </div>
                           <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
+                            <input v-model="form.email" type="email" class="form-control" id="email" name="email" required>
                           </div>
                           <div class="form-group">
-                            <label for="pmail">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
+                            <label for="password">Password</label>
+                            <input v-model="form.password" type="password" class="form-control" id="password" name="password" required>
                           </div>
-                          
                           <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <input v-model="form.gender" type="gender" class="form-control" id="password" name="password" required>
+                          </div>
+                         <div class="form-group">
                             <label for="role">Role</label>
-                            <select class="form-control" id="role" name="role" required>
+                            <select v-model ="form.role" class="form-control" id="role" name="role" required>
                               <option value="Admin">Admin</option>
                               <option value="User">User</option>
                             </select>
@@ -60,6 +63,7 @@
                 <div class="modal-footer">
                 <button @click="resetForm()" type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel </button>
                 <button 
+                    @click ="addUser()"
                     v-if ="status == 'add' "
                     type="button" 
                     class="btn btn-success
@@ -67,6 +71,7 @@
                 </button>
 
                 <button 
+                @click ="editUser"
                     v-if ="status == 'edit' "
                     type="button" 
                     class="btn btn-success
@@ -130,79 +135,137 @@
 @endsection
 
 @section('script')
-    <script>
-        var app = new Vue({
-            el: '#app',
-            data: {
-                message: 'Hello Vue!',
-                status :'add',
-                product_list:[],
-
-            },
-            created() {
-                // this.showModals();
-                this.fetchData();
-            },
-            methods: {
-                fetchData() {
-                    let vm = this;
-                    $.LoadingOverlay("show");  // Corrected function name
-                    axios.get('/admin/get-user')
-                        .then(function (response) {
-                            console.log(response.data);
-                            vm.product_list = response.data; // Fix: response.data instead of response
-                            $.LoadingOverlay("hide");
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                            $.LoadingOverlay("hide");
-                        });
-                },
-                showModals() {
-                    $('#exampleModal').modal('show');
-                },
-                closeModals() {
-                    $('#exampleModal').modal('hide');
-                },
-                getEdit(){
-                    //bind data to form 
-                    this.showModals();
-                    this.status = 'edit';
-                },
-                resetForm(){
-                    //bind data to form 
-                    this.status = 'add';
-                    this.closeModals();
-                },
-                getDelete(){
-                    //bnd data to form 
-                        Swal.fire({
-                        title: "Are you sure?",
-                        text: "You won't be able to revert this!",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#3085d6",
-                        cancelButtonColor: "#d33",
-                        confirmButtonText: "Yes, delete it!"
-                        }).then((result) => {
-
-                        if (result.isConfirmed) {
-                            // process Deleted
-                            Swal.fire({
-                            title: "Deleted!",
-                            text: "Your file has been deleted.",
-                            icon: "success"
-                            });
-                        }
+@section('script')
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello Vue!',
+            status: 'add',
+            product_list: [],
+            form: {
+                id: null,
+                name: null,
+                email: null,
+                gender:null,
+                password: null,
+                role: 'User'
+            }
+        },
+        created() {
+            this.fetchData();
+        },
+        methods: {
+            fetchData() {
+                let vm = this;
+                $.LoadingOverlay("show");
+                axios.get('/admin/get-user')
+                    .then(response => {
+                        console.log(response.data);
+                        vm.product_list = response.data;
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    })
+                    .finally(() => {
+                        $.LoadingOverlay("hide");
                     });
-                   
-                },
-                
+            },
+            showModals() {
+                $('#exampleModal').modal('show');
+            },
+            closeModals() {
+                $('#exampleModal').modal('hide');
+            },
+            getEdit(item) {
+                console.log(item);
+                this.form.id = item.id;
+                this.form.name = item.name;
+                this.form.email = item.email;
+                this.form.gender = item.gender;
+                this.status = 'edit';
+                this.showModals();
+            },
+            resetForm() {
+                this.status = 'add';
+                this.form.id = null;
+                this.form.name = null;
+                this.form.email = null;
+                this.form.gender = null;
+                this.form.password = null;
+                this.form.role = 'User';
+                this.closeModals();
+            },
+            getDelete(item) {
+                let vm = this;
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.LoadingOverlay("show");
+                        axios.post('/admin/delete-user', { id: item.id })
+                            .then(response => {
+                                if (response.status === 200) {
+                                    vm.fetchData();
+                                }
+                                console.log(response.data);
+                            })
+                            .catch(error => {
+                                console.error(error);
+                            })
+                            .finally(() => {
+                                $.LoadingOverlay("hide");
+                            });
+                    }
+                });
+            },
+            editUser() {
+                let vm = this;
+                $.LoadingOverlay("show");
+                axios.post('/admin/edit-user', vm.form) // Fixed API endpoint
+                    .then(response => {
+                        if (response.status === 200) {
+                            vm.resetForm();
+                            vm.fetchData();
+                            // vm.closeModals();
+                        }
+                        console.log(response.data);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    })
+                    .finally(() => {
+                        $.LoadingOverlay("hide");
+                    });
+            },
+            addUser() {
+                let vm = this;
+                $.LoadingOverlay("show");
+                axios.post('/admin/add-user', vm.form) // Fixed API endpoint
+                    .then(response => {
+                        if (response.status === 200) {
+                            vm.resetForm();
+                            vm.fetchData();
+                            // vm.closeModals();
+                        }
+                        console.log(response.data);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    })
+                    .finally(() => {
+                        $.LoadingOverlay("hide");
+                    });
+            }
+        }
+    });
+</script>
+@endsection
 
-
-                            },
-
-
-        });
-    </script>
     @endsection
