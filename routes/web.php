@@ -9,3 +9,4 @@ Route::get('/', function () {
 // Admin
 include 'admin/dashboard.php';
 include 'admin/user.php';
+include 'admin/branch.php';

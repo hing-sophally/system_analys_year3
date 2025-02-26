@@ -204,6 +204,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{route('admin.branch')}}" class="nav-link  {{$module =='branch' ? 'active' : ''}}">
+              <i class="fas fa-code-branch"></i><p>
+                Branch
+              </p>
+            </a>
+          </li>
           <li class="nav-item menu-open1">
             <a href="#" class="nav-link active1">
               <i class="nav-icon fas fa-tachometer-alt"></i>
