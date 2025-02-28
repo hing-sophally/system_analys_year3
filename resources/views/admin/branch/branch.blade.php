@@ -106,6 +106,8 @@
                                             <th>Phone</th>
                                             <th>Alt_phone</th>
                                             <th>Email</th>
+                                            <th>Action</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -165,17 +167,17 @@
         methods: {
             fetchData() {
                 let vm = this;
-                $.LoadingOverlay("show");
+                // ;
                 axios.get('/admin/get-branch')
                     .then(response => {
                         console.log(response.data);
                         vm.product_list = response.data;
                     })
                     .catch(error => {
-                        console.error(error);
+                                    
                     })
                     .finally(() => {
-                        $.LoadingOverlay("hide");
+
                     });
             },
             showModals() {
@@ -219,7 +221,7 @@
                     confirmButtonText: "Yes, delete it!"
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        $.LoadingOverlay("show");
+                        ;
                         axios.post('/admin/delete-branch', { id: item.id })
                             .then(response => {
                                 if (response.status === 200) {
@@ -231,14 +233,13 @@
                                 console.error(error);
                             })
                             .finally(() => {
-                                $.LoadingOverlay("hide");
+        
                             });
                     }
                 });
             },
             editbranch() {
                 let vm = this;
-                $.LoadingOverlay("show");
                 axios.post('/admin/edit-branch', vm.form) // Fixed API endpoint
                     .then(response => {
                         if (response.status === 200) {
@@ -252,12 +253,12 @@
                         console.error(error);
                     })
                     .finally(() => {
-                        $.LoadingOverlay("hide");
+
                     });
             },
             addbranch() {
                 let vm = this;
-                $.LoadingOverlay("show");
+                ;
                 axios.post('/admin/add-branch', vm.form) // Fixed API endpoint
                     .then(response => {
                         if (response.status === 200) {
@@ -271,7 +272,7 @@
                         console.error(error);
                     })
                     .finally(() => {
-                        $.LoadingOverlay("hide");
+
                     });
             }
         }

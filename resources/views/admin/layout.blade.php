@@ -278,7 +278,45 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
-<s
+
 </body>
+<script>
+  
+  axios.interceptors.request.use(function (config) {
+      // Do something before request is sent
+      $.LoadingOverlay("show");
+      return config;
+    }, function (error) {
+      // Do something with request error
+      console.error(error);
+      $.LoadingOverlay("hide");
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: `${error}`,
+        });
+      return Promise.reject(error);
+    });
+
+    // Add a response interceptor
+  axios.interceptors.response.use(function (response) {
+      // Any status code that lie within the range of 2xx cause this function to trigger
+      // Do something with response data
+      $.LoadingOverlay("hide");
+
+      return response;
+      
+    }, function (error) {
+      // Any status codes that falls outside the range of 2xx cause this function to trigger
+      // Do something with response error
+      $.LoadingOverlay("hide");
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: `${error}`,
+        });
+      return Promise.reject(error);
+    });
+</script>
 @yield('script')
 </html>

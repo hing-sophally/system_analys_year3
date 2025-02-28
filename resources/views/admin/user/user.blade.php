@@ -158,17 +158,16 @@
         methods: {
             fetchData() {
                 let vm = this;
-                $.LoadingOverlay("show");
                 axios.get('/admin/get-user')
                     .then(response => {
                         console.log(response.data);
                         vm.product_list = response.data;
                     })
                     .catch(error => {
-                        console.error(error);
+                       
                     })
                     .finally(() => {
-                        $.LoadingOverlay("hide");
+
                     });
             },
             showModals() {
@@ -208,7 +207,7 @@
                     confirmButtonText: "Yes, delete it!"
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        $.LoadingOverlay("show");
+                        ;
                         axios.post('/admin/delete-user', { id: item.id })
                             .then(response => {
                                 if (response.status === 200) {
@@ -220,14 +219,14 @@
                                 console.error(error);
                             })
                             .finally(() => {
-                                $.LoadingOverlay("hide");
+        
                             });
                     }
                 });
             },
             editUser() {
                 let vm = this;
-                $.LoadingOverlay("show");
+                ;
                 axios.post('/admin/edit-user', vm.form) // Fixed API endpoint
                     .then(response => {
                         if (response.status === 200) {
@@ -241,12 +240,12 @@
                         console.error(error);
                     })
                     .finally(() => {
-                        $.LoadingOverlay("hide");
+
                     });
             },
             addUser() {
                 let vm = this;
-                $.LoadingOverlay("show");
+                ;
                 axios.post('/admin/add-user', vm.form) // Fixed API endpoint
                     .then(response => {
                         if (response.status === 200) {
@@ -260,7 +259,7 @@
                         console.error(error);
                     })
                     .finally(() => {
-                        $.LoadingOverlay("hide");
+
                     });
             }
         }
