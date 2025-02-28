@@ -33,33 +33,30 @@ class UserController extends Controller
             return response()->json(['res' => $res, 'message' => 'User deleted successfully']);
         }
 
-    public function edituser( Request $request) {
-        // @dd($request->all());
-
-        $id = $request-> id;
-        $name = $request->name;
-        $email = $request->email;
-        $gender = $request->gender;
-        $role = $request->role;
-
-        // @dd($id , $user_name, $email, $role);
-
-        $user = DB::table('users')
-        ->where('id', $id)
-        ->update(
-            [
-                'name' => $name,
-                'email' => $email,
-                'gender' => $gender,
-                'role' => $role,
-            ]   
-        );
-        // @dd($user)
-        $new_update = DB::table('users')->where('id', $id)->first();
-        return response()->json([$new_update, 'message' => 'User updated successfully']);
-        // return redirect()->route('admin.user');
-
-    }
+        public function edituser(Request $request) {
+            // Retrieve the id and other fields from the request
+            $id = $request->id;
+            $name = $request->name;
+            $email = $request->email;
+            $gender = $request->gender;
+            $role = $request->role;
+        
+            // Update the user in the database
+            $user = DB::table('users')
+                ->where('id', $id)
+                ->update([
+                    'name' => $name,
+                    'email' => $email,
+                    'gender' => $gender,
+                    'role' => $role,
+                ]);
+        
+            // Retrieve the updated user
+            $new_update = DB::table('users')->where('id', $id)->first();
+        
+            // Return the updated user as a JSON response
+            return response()->json([$new_update, 'message' => 'User updated successfully']);
+        }
     public function adduser( Request $request) {
         // @dd($request->all());
 

@@ -35,7 +35,7 @@ class BranchController extends Controller
 
     public function editbranch( Request $request) {
         // @dd($request->all());
-
+        $id = $request-> id;
         $name = $request->name;
         $logo = $request->logo;
         $location = $request->location;
