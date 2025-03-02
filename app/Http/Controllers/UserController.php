@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\User; // Ensure User model is included
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -36,53 +40,59 @@ class UserController extends Controller
         public function edituser(Request $request) {
             // Retrieve the id and other fields from the request
             $id = $request->id;
-            $name = $request->name;
+            $username = $request->username;
             $email = $request->email;
             $gender = $request->gender;
+            $password = $request->password;
             $role = $request->role;
         
             // Update the user in the database
             $user = DB::table('users')
                 ->where('id', $id)
                 ->update([
-                    'name' => $name,
+                    'username' => $username,
                     'email' => $email,
+                    'password' => Hash::make('password'), // Hash the password
                     'gender' => $gender,
                     'role' => $role,
                 ]);
         
             // Retrieve the updated user
-            $new_update = DB::table('users')->where('id', $id)->first();
+            $new_update = DB::table('users')->where(column: 'id', operator: $id)->first();
         
             // Return the updated user as a JSON response
             return response()->json([$new_update, 'message' => 'User updated successfully']);
         }
-    public function adduser( Request $request) {
-        // @dd($request->all());
-
-        $name = $request->name;
-        $email = $request->email;
-        $password = $request->password;
-        $gender = $request->gender;
-        $role = $request->role;
-
-        // @dd($id , $user_name, $email, $role);
-
-        $user = DB::table('users')
-        ->insert(
-            [
-                'name' => $name,
-                'email' => $email,
-                'gender' => $gender,
-                'password' => Hash::make($password),
-                'role' => $role,
-            ]   
-        );
-        // @dd($user)
-        return response()->json([$user, 'message' => 'User updated successfully']);
-        // return redirect()->route('admin.user');
-
-    }
+        public function addUser(Request $request) {
+            // Log request data for debugging
+            Log::info('Add User Request:', $request->all());
+        
+            // Validate request data
+            $request->validate([
+                'username' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required|string|min:6',
+                'gender' => 'required|string',
+                'role' => 'required|string'
+            ]);
+        
+            // Insert user into the database with hashed password
+            $user = DB::table('users')->insert([
+                'username' => $request->username,
+                'email' => $request->email,
+                'gender' => $request->gender,
+                'password' => Hash::make($request->password), // ✅ Hashing password properly
+                'role' => $request->role,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        
+            return response()->json([
+                'success' => (bool) $user,
+                'message' => $user ? 'User added successfully' : 'Failed to add user'
+            ]);
+        }
+        
         
 
 }

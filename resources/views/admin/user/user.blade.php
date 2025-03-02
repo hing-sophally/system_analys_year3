@@ -32,7 +32,7 @@
                         <form action="" method="POST">
                           <div class="form-group">
                             <label for="username">Username</label>
-                            <input v-model="form.name" type="text" class="form-control" id="username" name="username" required>
+                            <input v-model="form.username" type="text" class="form-control" id="username" name="username" required>
                           </div>
                           <div class="form-group">
                             <label for="email">Email</label>
@@ -108,7 +108,7 @@
                                         <!-- Loop through product_list to display user data -->
                                         <tr v-for="(user, index) in product_list" :key="user.id">
                                             <td>@{{ index + 1 }}</td>
-                                            <td>@{{ user.name }}</td>
+                                            <td>@{{ user.username }}</td>
                                             <td>@{{ user.email }}</td>
                                             <td>@{{ user.gender }}</td>
                                             <td>@{{ user.role }}</td>
@@ -145,7 +145,7 @@
             product_list: [],
             form: {
                 id: null,
-                name: null,
+                username: null,
                 email: null,
                 gender:null,
                 password: null,
@@ -179,7 +179,7 @@
             getEdit(item) {
                 console.log(item);
                 this.form.id = item.id;
-                this.form.name = item.name;
+                this.form.username = item.username;
                 this.form.email = item.email;
                 this.form.gender = item.gender;
                 this.status = 'edit';
@@ -188,7 +188,7 @@
             resetForm() {
                 this.status = 'add';
                 this.form.id = null;
-                this.form.name = null;
+                this.form.username = null ;
                 this.form.email = null;
                 this.form.gender = null;
                 this.form.password = null;
