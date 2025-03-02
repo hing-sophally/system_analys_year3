@@ -179,7 +179,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <img src="{{asset('dist/img/user2-160x160.jpg')}}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block font-weight-bold">Hing Sophally </a>
+          <a href="" class="d-block font-weight-bold">System Analysis</a>
         </div>
       </div>
 
@@ -208,6 +208,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <a href="{{route('admin.branch')}}" class="nav-link  {{$module =='branch' ? 'active' : ''}}">
               <i class="fas fa-code-branch"></i><p>
                 Branch
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{route('admin.categories')}}" class="nav-link  {{$module =='categories' ? 'active' : ''}}">
+              <i class="fas fa-code-branch"></i><p>
+                Categories
               </p>
             </a>
           </li>
