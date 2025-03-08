@@ -21,7 +21,7 @@ class Authenticate
         // Check if the user is authenticated
         if (Auth::guard($guard)->guest()) {
             // If not authenticated, redirect to login page
-            return redirect()->route('login');
+            return redirect()->route('admin.login');
         }
 
         return $next($request);

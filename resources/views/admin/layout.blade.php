@@ -19,14 +19,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="sweetalert2.min.js"></script>
 <link rel="stylesheet" href="sweetalert2.min.css">
+{{-- Links khmer font --}}
+<link href="https://fonts.googleapis.com/css2?family=Siemreap&display=swap" rel="stylesheet">
+
 <!-- Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <style>
-  *{
-    font-family: 'Roboto', sans-serif;
-  }
+
+* {
+    font-family: "Khmer OS Siemreap", Roboto, sans-serif;
+    font-size: 14px;
+}
+
 </style>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -175,15 +181,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <div class="sidebar">
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-        <div class="image">
-          <img src="{{asset('dist/img/user2-160x160.jpg')}}" class="img-circle elevation-2" alt="User Image">
-        </div>
-        <div class="info">
-          <a href="" class="d-block font-weight-bold">System Analysis</a>
-        </div>
+          <div class="image">
+              <img src="{{ asset('dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image">
+          </div>
+          <div class="info">
+              @auth
+                  <p  class="d-block font-weight-bold text-white font-size-12 ">{{ Auth::user()->username  }}</p>
+              @else
+                  <a href="#" class="d-block font-weight-bold">Guest</a>
+              @endauth
+          </div>
       </div>
 
-    
       <!-- Sidebar Menu -->
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -213,11 +222,35 @@ scratch. This page gets rid of all links and provides the needed markup only.
           </li>
           <li class="nav-item">
             <a href="{{route('admin.categories')}}" class="nav-link  {{$module =='categories' ? 'active' : ''}}">
-              <i class="fas fa-code-branch"></i><p>
-                Categories
-              </p>
+                <i class="fas fa-cogs"></i>
+                <p>Product Categories</p>
             </a>
-          </li>
+        </li>
+        <li class="nav-item">
+            <a href="{{route('admin.services')}}" class="nav-link  {{$module =='services' ? 'active' : ''}}">
+                <i class="fas fa-concierge-bell"></i>
+                <p>Our Services</p>
+            </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{route('admin.customers')}}" class="nav-link  {{$module =='customers' ? 'active' : ''}}">
+              <i class="fas fa-users-slash "></i>
+              <p>Customers </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{route('admin.suppliers')}}" class="nav-link  {{$module =='suppliers' ? 'active' : ''}}">
+              <i class="fas fa-user-friends "></i>
+              <p>Suppliers </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{route('admin.deliveries')}}" class="nav-link  {{$module =='deliveries' ? 'active' : ''}}">
+            <i class="fas fa-truck-loading"></i>
+                          <p>Delivery </p>
+          </a>
+        </li>
+        
           <li class="nav-item menu-open1">
             <a href="#" class="nav-link active1">
               <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -239,6 +272,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   <p>Inactive Page</p>
                 </a>
               </li>
+            
             </ul>
           </li>
           
@@ -268,7 +302,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       Anything you want
     </div>
     <!-- Default to the left -->
-    <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
+    <strong>Copyright &copy; 2014-2021 <a href="https://web.facebook.com/hing.sophally/">HingSophally</a>.</strong> All rights reserved.
   </footer>
 </div>
 <!-- ./wrapper -->
