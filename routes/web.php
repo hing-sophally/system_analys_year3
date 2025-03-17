@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\PayPalController; 
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -14,7 +16,9 @@ Route::get('/lang/{lang}', function ($lang) {
     }
     return redirect()->back();
 });
-
+Route::post('/create-paypal-order', [PayPalController::class, 'createOrder']);
+Route::get('/paypal/success', [PaypalController::class, 'success'])->name('paypal.success');
+Route::get('/paypal/cancel', [PaypalController::class, 'cancel'])->name('paypal.cancel');
 // Admin
 include'admin/auth.php';
 Route::middleware(['auth'])->group(function () {
@@ -26,4 +30,7 @@ Route::middleware(['auth'])->group(function () {
         include 'admin/customers.php';
         include 'admin/suppliers.php';
         include 'admin/deliveries.php';
+        include 'admin/invoices.php';
+        include 'admin/pos.php';
+        include 'admin/payment.php';
 });

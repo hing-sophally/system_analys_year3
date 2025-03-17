@@ -7,7 +7,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AdminLTE 3 | Starter</title>
+  <title>{{ ucfirst($module ?? 'Dashboard') }} </title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -248,6 +248,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <a href="{{route('admin.deliveries')}}" class="nav-link  {{$module =='deliveries' ? 'active' : ''}}">
             <i class="fas fa-truck-loading"></i>
                           <p>Delivery </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{route('admin.reports')}}" class="nav-link  {{$module =='reports' ? 'active' : ''}}">
+            <i class="fas fa-receipt -mt-2"></i>
+                          <p>Report </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{route(name: 'admin.pos')}}" class="nav-link  {{$module =='pos' ? 'active' : ''}}">
+            <i class="fas fa-receipt -mt-2"></i>
+                          <p>POS Screen  </p>
           </a>
         </li>
         
