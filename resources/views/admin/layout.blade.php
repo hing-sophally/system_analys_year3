@@ -7,7 +7,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ ucfirst($module ?? 'Dashboard') }} </title>
+  <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
+
+  <title>
+    {{ ucfirst(string: $module ?? 'Dashboard') }} 
+  </title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -262,31 +266,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
                           <p>POS Screen  </p>
           </a>
         </li>
-        
-          <li class="nav-item menu-open1">
-            <a href="#" class="nav-link active1">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
-              <p>
-                Starter Pages
-                <i class="right fas fa-angle-left"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="#" class="nav-link active">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Active Page</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Inactive Page</p>
-                </a>
-              </li>
-            
-            </ul>
-          </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+              <i class="fas fa-sign-out-alt"></i>
+              <p>Logout</p>
+          </a>
+          <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+              @csrf
+          </form>
+      </li>
+      
+      
+      
           
         </ul>
       </nav>

@@ -21,9 +21,10 @@ class PaymentController extends Controller
     public function getReports(Request $request)
     {
         $reports = Payment::with('user')
+            ->whereIn('status', ['completed', 'pending', 'failed'])  // Corrected query using whereIn
             ->select('id', 'user_id', 'amount', 'payment_method', 'status', 'paid_at', 'created_at', 'updated_at')
             ->paginate(10);
-
+    
         return response()->json([
             'data' => $reports->items(),
             'pagination' => [
@@ -33,6 +34,8 @@ class PaymentController extends Controller
             ]
         ]);
     }
+    
+
 
     // Add a new payment report
     public function addReport(Request $request)

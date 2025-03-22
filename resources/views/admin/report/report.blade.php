@@ -1,5 +1,25 @@
 @extends('admin.layout')
 @section('content')
+<style>
+    .swal-confirm-btn {
+    background-color: #28a745 !important; /* Green */
+    color: white !important;
+    border: none !important;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.swal-cancel-btn {
+    background-color: #dc3545 !important; /* Red */
+    color: white !important;
+    border: none !important;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+</style>
 <div class="content-wrapper" id="app">
     <div class="content-header">
         <div class="container-fluid">
@@ -29,7 +49,7 @@
                     <form @submit.prevent="submitForm">
                         <div class="form-group mb-2">
                             <label for="user_id">User ID</label>
-                            <input v-model="form.user_id" type="number" class="form-control" required>
+                            <input v-model="form.user_id" type="number" class="form-control" readonly>
                         </div>
                         <div class="form-group mb-2">
                             <label for="amount">Amount</label>
@@ -89,12 +109,21 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(report, index) in reportList" :key="report.id">
+                                    <tr v-for="(report, index) in reportList" :key="report.id + report.status"> <!-- Include the status in the key -->
                                         <td>@{{ report.id }}</td>
                                         <td>@{{ report.user_id }}</td>
                                         <td>@{{ report.amount }}</td>
                                         <td>@{{ report.payment_method }}</td>
-                                        <td>@{{ report.status }}</td>
+                                        <td>
+                                            <span :class="{
+                                                'badge': true, 
+                                                'bg-success': report.status === 'completed', 
+                                                'bg-danger': report.status === 'failed', 
+                                                'bg-warning': report.status === 'pending'
+                                            }">
+                                                @{{ report.status }}
+                                            </span>
+                                        </td>
                                         <td>@{{ report.paid_at }}</td>
                                         <td>@{{ report.created_at }}</td>
                                         <td>@{{ report.updated_at }}</td>
@@ -103,7 +132,9 @@
                                             <button class="btn btn-sm btn-danger" @click="getDelete(report)">Delete</button>
                                         </td>
                                     </tr>
+                                    
                                 </tbody>
+                                
                             </table>
                         </div>
                         {{-- Pagination (optional) --}}
@@ -118,6 +149,9 @@
 
 @section('script')
 <script>
+    const AUTH_USER_ID = {{ auth()->user()->id }};
+    console.log('---------------------------',AUTH_USER_ID);
+    
     const app = new Vue({
         el: '#app',
         data: {
@@ -125,7 +159,7 @@
             reportList: [],
             form: {
                 id: null,
-                user_id: null,
+                user_id: AUTH_USER_ID,
                 amount: null,
                 payment_method: '',
                 status: 'pending',
@@ -145,9 +179,13 @@
             },
             showModal(mode) {
                 this.status = mode;
-                if (mode === 'add') this.resetForm(false);
+                if (mode === 'add') {
+                    this.resetForm(false);
+                    this.form.user_id = AUTH_USER_ID; // dynamically set user_id
+                }
                 $('#exampleModal').modal('show');
             },
+
             closeModal() {
                 $('#exampleModal').modal('hide');
             },
@@ -172,7 +210,13 @@
                     text: "You won’t be able to revert this!",
                     icon: "warning",
                     showCancelButton: true,
-                    confirmButtonText: "Yes, delete it!"
+                    confirmButtonText: "Yes, delete it!",
+                    cancelButtonText: "Cancel",
+                    customClass: {
+                        confirmButton: 'swal-confirm-btn',
+                        cancelButton: 'swal-cancel-btn'
+                    },
+                    buttonsStyling: false // this allows custom styles to take effect
                 }).then((result) => {
                     if (result.isConfirmed) {
                         axios.post('/delete-reports', { id: report.id })
@@ -184,7 +228,9 @@
                     }
                 });
             },
+
             submitForm() {
+                this.form.user_id = AUTH_USER_ID; // assign dynamically just before sending
                 const url = this.status === 'add' ? '/add-reports' : '/edit-reports';
                 axios.post(url, this.form)
                     .then(() => {

@@ -3,7 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
-use App\Http\Controllers\PayPalController; 
+use App\Http\Controllers\PayPalController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,6 +17,7 @@ Route::get('/lang/{lang}', function ($lang) {
     }
     return redirect()->back();
 });
+
 Route::post('/create-paypal-order', [PayPalController::class, 'createOrder']);
 Route::get('/paypal/success', [PaypalController::class, 'success'])->name('paypal.success');
 Route::get('/paypal/cancel', [PaypalController::class, 'cancel'])->name('paypal.cancel');
