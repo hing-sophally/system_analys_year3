@@ -40,4 +40,10 @@
         <p>You have cancelled the payment. No amount was charged.</p>
     </div>
 </body>
+<!-- Add this snippet to your view (e.g., paypal.success or paypal.cancle) -->
+@if(session('redirect'))
+    <script type="text/javascript">
+        window.location.href = "{{ session('redirect') }}";
+    </script>
+@endif
 </html>

@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\UserController;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/frontend', function () {
+    return view('frontend.layout');
 });
 
 Route::get('/lang/{lang}', function ($lang) {

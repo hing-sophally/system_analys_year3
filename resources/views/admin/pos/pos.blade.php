@@ -34,10 +34,10 @@
       <div class="col-lg-3 col-md-4 col-sm-6 mb-2 mt-2" v-for="(item, index) in product_list" :key="'product_list_' + index">
         <div class="card d-flex flex-column" style="width: 100%; height: 250px; overflow: hidden;"
         @click="selectProductCard(item)">
-        <img :src="item . image" class="card-img-top" style="height: 140px; object-fit: cover;">
+        <img v-if="item.image_url" :src="'/storage/' + item.image_url" style=" height: 140px;" alt="Service Image">
         <div class="card-body d-flex flex-column p-2 text-center">
           <h6 class="card-title"
-          style="font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@{{ item.title
+          style="font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@{{ item.name
           }}</h6>
           <p class="card-text font-weight-bold mt-auto"
           style="font-size: 16px; background-color: yellow; color: red; width: 100%; padding: 2px;">
@@ -67,7 +67,7 @@
         <tbody>
         <tr v-for="(item, index) in selected_product_list" :key="'selected_product_list_' + index">
           <td>@{{ index + 1 }}</td>
-          <td>@{{ item.title }}</td>
+          <td>@{{ item.name }}</td>
           <td>
           <input type="number" v-model="item.qty" @input="qtyOnchange(index, item.qty)" style="width: 60px;
         text-align: center;
@@ -148,18 +148,22 @@
     },
     data() {
       return {
-      product_list: [],
-      selected_product_list: [],
-      total: 0,
-      received_amount: 0
+        product_list: [],
+        services: [],
+        categories: [],
+        product_list: [],
+        selected_product_list: [],
+        total: 0,
+        received_amount: 0
       }
     },
     methods: {
       fetchData() {
       $.LoadingOverlay("show");
-      axios.get('https://fakestoreapi.com/products')
+      axios.get('/admin/pos/getPosData')
         .then((response) => {
-        this.product_list = response.data
+          console.log(response.services)
+        this.product_list = response.data.services
         $.LoadingOverlay("hide");
         })
         .catch((error) => {
