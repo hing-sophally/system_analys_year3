@@ -5,12 +5,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0 font-weight-bold">Categories Page</h1>
+                    <h1 class="m-0 font-weight-bold">Products Page</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="/admin/dashboard">Home</a></li>
-                        <li class="breadcrumb-item active">Categories</li>
+                        <li class="breadcrumb-item active">Products</li>
                     </ol>
                 </div>
             </div>
@@ -22,29 +22,56 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title fs-5 font-weight-bold" id="exampleModalLabel">Categories</h3>
+                    <h3 class="modal-title fs-5 font-weight-bold" id="exampleModalLabel">Product</h3>
                     <button @click="resetForm()" type="button" class="btn-close" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form @submit.prevent>
                         <div class="form-group">
-                            <label>Category Name</label>
+                            <label>Category</label>
+                            <select v-model="form.category_id" class="form-control" required>
+                                <option value="">-- Select Category --</option>
+                                <option v-for="cat in categories" :value="cat.id">@{{ cat.name }}</option>
+                            </select>
+                            
+                        </div>
+                        <div class="form-group">
+                            <label>Product Name</label>
                             <input v-model="form.name" type="text" class="form-control" required>
                         </div>
                         <div class="form-group">
                             <label>Image</label>
-                            <input ref="image_url" type="file" class="form-control">
+                            <input ref="image_url" type="file" class="form-control" :disabled="status === 'edit' && form.image_url">
+                            <div v-if="form.image_url">
+                                <img :src="'/storage/' + form.image_url" alt="Product Image" width="100" class="mt-2">
+                            </div>
                         </div>
+                        
                         <div class="form-group">
                             <label>Description</label>
                             <textarea v-model="form.description" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Price</label>
+                            <input v-model="form.price" type="number" step="0.01" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Stock</label>
+                            <input v-model="form.stock" type="number" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select v-model="form.status" class="form-control" required>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button @click="resetForm()" type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                    <button v-if="status == 'add'" @click="addcategories()" type="button" class="btn btn-success">Save</button>
-                    <button v-if="status == 'edit'" @click="editcategories()" type="button" class="btn btn-success">Edit</button>
+                    <button v-if="status == 'add'" @click="addproducts()" type="button" class="btn btn-success">Save</button>
+                    <button v-if="status == 'edit'" @click="editproducts()" type="button" class="btn btn-success">Edit</button>
                 </div>
             </div>
         </div>
@@ -56,7 +83,7 @@
             <div class="card">
                 <div class="card-header">
                     <a @click="showModals()" href="#" class="btn btn-primary">
-                        <i class="fa fa-plus-circle"></i> Add Category
+                        <i class="fa fa-plus-circle"></i> Add Product
                     </a>
                 </div>
                 <div class="card-body">
@@ -67,32 +94,41 @@
                                 <th>Name</th>
                                 <th>Image</th>
                                 <th>Description</th>
+                                <th>Category</th> <!-- Updated header -->
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(category, index) in product_list" :key="category.id">
+                            <tr v-for="(product, index) in product_list" :key="product.id">
                                 <td>@{{ index + 1 }}</td>
-                                <td>@{{ category.name }}</td>
+                                <td>@{{ product.name }}</td>
                                 <td>
-                                    <img :src="'/storage/' + category.image_url" alt="Category Image" width="100">
+                                    <img :src="'/storage/' + product.image_url" alt="Product Image" width="50">
                                 </td>
-                                <td>@{{ category.description }}</td>
+                                <td>@{{ product.description }}</td>
+                                <td>@{{ product.category_name }}</td>
+                                <td>@{{ product.price }}</td>
+                                <td>@{{ product.stock }}</td>
+                                <td>@{{ product.status == 1 ? 'Active' : 'Inactive' }}</td>
                                 <td>
-                                    <a @click="getEdit(category)" class="btn btn-sm btn-success">
+                                    <a @click="getEdit(product)" class="btn btn-sm btn-success">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a @click="getDelete(category)" class="btn btn-sm btn-danger">
+                                    <a @click="getDelete(product)" class="btn btn-sm btn-danger">
                                         <i class="fa fa-trash"></i>
                                     </a>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                    
                 </div>
             </div>
         </div>
-        {{ $categories->links('vendor.pagination.bootstrap-5') }}
+        {{ $products->links('vendor.pagination.bootstrap-5') }}
     </div>
 </div>
 @endsection
@@ -103,22 +139,35 @@
         el: '#app',
         data: {
             status: 'add',
-            product_list: [],
+            product_list: [], // Store the products fetched from the server
+            categories: [], // Store the categories for the dropdown
             form: {
                 id: null,
+                category_id: '',
                 name: '',
-                description: ''
+                description: '',
+                price: '',
+                stock: '',
+                status: 1, // Default to Active
+                image_url: ''
             }
         },
         created() {
-            this.fetchData();
+            this.fetchData(); // Fetch products with categories
+            this.fetchCategories(); // Fetch categories for the dropdown
         },
         methods: {
             fetchData() {
-                axios.get('/admin/get-categories')
+                axios.get('/admin/get-products') // Make sure this endpoint returns products with categories
                     .then(res => this.product_list = res.data)
                     .catch(err => console.error(err));
             },
+            fetchCategories() {
+            axios.get('/admin/get-categories') // Fetch categories, not products
+                .then(res => this.categories = res.data) // Store categories in the correct variable
+                .catch(err => console.error(err));
+        },
+
             showModals() {
                 $('#exampleModal').modal('show');
             },
@@ -127,7 +176,7 @@
             },
             resetForm() {
                 this.status = 'add';
-                this.form = { id: null, name: '', description: '' };
+                this.form = { id: null, category_id: '', name: '', description: '', price: '', stock: '', status: 1, image_url: '' };
                 if (this.$refs.image_url) {
                     this.$refs.image_url.value = '';
                 }
@@ -135,14 +184,20 @@
             },
             getEdit(item) {
                 this.form.id = item.id;
+                this.form.category_id = item.category_id; // This should correctly set the category_id
                 this.form.name = item.name;
                 this.form.description = item.description;
+                this.form.price = item.price;
+                this.form.stock = item.stock;
+                this.form.status = item.status;
+                this.form.image_url = item.image_url;
                 this.status = 'edit';
                 if (this.$refs.image_url) {
-                    this.$refs.image_url.value = '';
+                    this.$refs.image_url.value = ''; // Reset the file input (optional)
                 }
                 this.showModals();
             },
+
             getDelete(item) {
                 Swal.fire({
                     title: "Are you sure?",
@@ -154,35 +209,43 @@
                     confirmButtonText: "Yes, delete it!"
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        axios.post('/admin/delete-categories', { id: item.id })
+                        axios.post('/admin/delete-products', { id: item.id })
                             .then(() => this.fetchData())
                             .catch(err => console.error(err));
                     }
                 });
             },
-            addcategories() {
+            addproducts() {
                 const formData = new FormData();
+                formData.append('category_id', this.form.category_id);
                 formData.append('name', this.form.name);
                 formData.append('description', this.form.description);
+                formData.append('price', this.form.price);
+                formData.append('stock', this.form.stock);
+                formData.append('status', this.form.status);
                 if (this.$refs.image_url.files.length > 0) {
                     formData.append('image_url', this.$refs.image_url.files[0]);
                 }
-                axios.post('/admin/add-categories', formData)
+                axios.post('/admin/add-products', formData)
                     .then(() => {
                         this.resetForm();
                         this.fetchData();
                     })
                     .catch(err => console.error(err));
             },
-            editcategories() {
+            editproducts() {
                 const formData = new FormData();
                 formData.append('id', this.form.id);
+                formData.append('category_id', this.form.category_id);
                 formData.append('name', this.form.name);
                 formData.append('description', this.form.description);
+                formData.append('price', this.form.price);
+                formData.append('stock', this.form.stock);
+                formData.append('status', this.form.status);
                 if (this.$refs.image_url.files.length > 0) {
                     formData.append('image_url', this.$refs.image_url.files[0]);
                 }
-                axios.post('/admin/edit-categories', formData)
+                axios.post('/admin/edit-products', formData)
                     .then(() => {
                         this.resetForm();
                         this.fetchData();

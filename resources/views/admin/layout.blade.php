@@ -8,10 +8,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
-
   <title>
     {{ ucfirst(string: $module ?? 'Dashboard') }} 
   </title>
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+ 
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -228,6 +234,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <a href="{{route('admin.categories')}}" class="nav-link  {{$module =='categories' ? 'active' : ''}}">
                 <i class="fas fa-cogs"></i>
                 <p>Product Categories</p>
+            </a>
+        </li>
+          <li class="nav-item">
+            <a href="{{route('admin.products')}}" class="nav-link  {{$module =='products' ? 'active' : ''}}">
+                <i class="fas fa-cogs"></i>
+                <p>Product </p>
             </a>
         </li>
         <li class="nav-item">

@@ -112,7 +112,7 @@ class ServicesController extends Controller
         $service->image_url = $imagePath;
         $service->save();
     
-        return response()->json($service);
+        return response()->json(data: $service);
     }
     
     public function editServices(Request $request)

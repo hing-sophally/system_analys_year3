@@ -6,9 +6,9 @@ use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\UserController;
 
-Route::get('/frontend', function () {
-    return view('frontend.layout');
-});
+// Route::get('/frontend', function () {
+//     return view('frontend.home.index');
+// });
 
 Route::get('/lang/{lang}', function ($lang) {
     if (in_array($lang, ['en', 'km'])) {
@@ -28,6 +28,7 @@ Route::middleware(['auth'])->group(function () {
         include 'admin/user.php';
         include 'admin/branch.php';
         include 'admin/categories.php';
+        include 'admin/product.php';
         include 'admin/services.php';
         include 'admin/customers.php';
         include 'admin/suppliers.php';
@@ -35,4 +36,13 @@ Route::middleware(['auth'])->group(function () {
         include 'admin/invoices.php';
         include 'admin/pos.php';
         include 'admin/payment.php';
+});
+
+// frontendroutes
+include 'frontend/home.php';
+
+
+Route::get('/clear-cart', function() {
+    session()->forget('cart');
+    return 'Cart cleared!';
 });

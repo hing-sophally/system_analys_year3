@@ -89,7 +89,7 @@
             <div class="progress"></div>
         </div>
         
-        <a href="{{ url('/') }}" class="button">Return to Home</a>
+        <a href="{{ url('/home') }}" class="button">Return to Home</a>
     </div>
 </body>
 <!-- Add this snippet to your view (e.g., paypal.success or paypal.cancle) -->
