@@ -35,7 +35,7 @@
             @foreach($products as $product)
             <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center">
                 <div class="card shadow-sm" style="width: 250px;">
-                    <img src="{{ '/storage/' . $product->image_url }}" 
+                    <img src="{{ $product->image_url ? (str_starts_with($product->image_url, 'http') ? $product->image_url : '/storage/' . $product->image_url) : '/images/products/default.svg' }}" 
                          alt="{{ $product->name }}"
                          class="card-img-top"
                          style="height: 250px; object-fit: contain;">
@@ -47,11 +47,17 @@
                         </p>
                         <div class="mt-auto d-flex justify-content-between align-items-center">
                             <span class="text-primary fw-bold">${{ number_format($product->price, 2) }}</span>
-                            <a href="#" 
-                                class="btn btn-sm btn-success add-to-cart-btn" 
-                                data-id="{{ $product->id }}">
-                                Add to Cart
-                            </a>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-danger" 
+                                    onclick="addToWishlist({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }}, '{{ $product->image_url ? (str_starts_with($product->image_url, 'http') ? $product->image_url : asset('storage/' . $product->image_url)) : asset('images/products/default.svg') }}')"
+                                    title="Add to Wishlist">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                <button class="btn btn-sm btn-success" 
+                                    onclick="addToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }}, '{{ $product->image_url ? (str_starts_with($product->image_url, 'http') ? $product->image_url : asset('storage/' . $product->image_url)) : asset('images/products/default.svg') }}')">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -84,7 +90,19 @@ $(document).ready(function() {
                 $('#cart-count').text(response.cartCount);
             },
             error: function(xhr) {
-                alert('Failed to add to cart.');
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Failed to add to cart.',
+                        timer: 3000,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                } else {
+                    alert('Failed to add to cart.');
+                }
             }
         });
     });
@@ -151,7 +169,7 @@ $(document).ready(function() {
       <div class="col-lg-3 col-md-4 col-sm-6 mb-2 mt-2" v-for="(item, index) in product_list" :key="'product_list_' + index">
         <div class="card d-flex flex-column" style="width: 100%; height: 250px; overflow: hidden;"
         @click="selectProductCard(item)">
-        <img v-if="item.image_url" :src="'/storage/' + item.image_url" style=" height: 140px;" alt="Service Image">
+        <img v-if="item.image_url" :src="item.image_url.startsWith('http') ? item.image_url : '/storage/' + item.image_url" style=" height: 140px;" alt="Service Image">
         <div class="card-body d-flex flex-column p-2 text-center">
           <h6 class="card-title"
           style="font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@{{ item.name
@@ -298,7 +316,19 @@ $(document).ready(function() {
     })
     .catch((error) => {
       console.error("Error fetching products:", error);
-      alert("Failed to fetch product data.");
+      if (typeof Swal !== 'undefined') {
+          Swal.fire({
+              icon: 'error',
+              title: 'Error!',
+              text: 'Failed to fetch product data.',
+              timer: 3000,
+              showConfirmButton: false,
+              toast: true,
+              position: 'top-end'
+          });
+      } else {
+          alert("Failed to fetch product data.");
+      }
     });
 },
 
@@ -353,14 +383,38 @@ $(document).ready(function() {
               window.open(paypalUrl, '_blank', `width=${width},height=${height},left=${left},top=${top}`);
             })
             .catch((error) => {
+              if (typeof Swal !== 'undefined') {
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Payment Error!',
+                  text: 'Failed to initiate PayPal payment.',
+                  timer: 3000,
+                  showConfirmButton: false,
+                  toast: true,
+                  position: 'top-end'
+              });
+          } else {
               alert("Failed to initiate PayPal payment.");
+          }
               console.error(error);
             })
             .finally(() => {
               $("body").LoadingOverlay("hide"); // hide overlay
             });
           } else {
-            alert("Received amount is less than total!");
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Amount Mismatch!',
+                    text: 'Received amount is less than total!',
+                    timer: 3000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            } else {
+                alert("Received amount is less than total!");
+            }
           }
         },
 
@@ -373,7 +427,19 @@ $(document).ready(function() {
 
         qtyOnchange(index, qty) {
           if (isNaN(parseInt(qty)) || parseInt(qty) < 1) {
-            alert("Enter a valid quantity");
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Quantity!',
+                    text: 'Enter a valid quantity',
+                    timer: 3000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            } else {
+                alert("Enter a valid quantity");
+            }
             this.selected_product_list[index].qty = 1;
             return;
           }

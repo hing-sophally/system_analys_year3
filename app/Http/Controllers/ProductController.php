@@ -107,12 +107,17 @@ public function fetchproducts()
             $stock = $request->stock;
             $status = $request->status ?? 1;  // Default to 1 if no status is provided
         
+            // Get the current product to preserve existing image if no new one is uploaded
+            $currentProduct = DB::table('products')->where('id', $request->id)->first();
+            $imagePath = $currentProduct->image_url; // Keep existing image by default
+        
             // Handle file upload if a new file is uploaded
             if ($request->hasFile('image_url')) {
+                // Delete old image if it exists and is not a placeholder URL
+                if ($currentProduct->image_url && !str_starts_with($currentProduct->image_url, 'http')) {
+                    Storage::delete('public/' . $currentProduct->image_url);
+                }
                 $imagePath = $request->file('image_url')->store('products', 'public');
-            } else {
-                // Use the existing image if no new file is uploaded
-                $imagePath = $request->input('existing_image'); // Ensure this is passed from the frontend if editing
             }
         
             // Update the product in the database

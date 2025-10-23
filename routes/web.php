@@ -42,7 +42,4 @@ Route::middleware(['auth'])->group(function () {
 include 'frontend/home.php';
 
 
-Route::get('/clear-cart', function() {
-    session()->forget('cart');
-    return 'Cart cleared!';
-});
+// Clear cart route removed - using localStorage instead of sessions

@@ -114,7 +114,7 @@ h1 {
                             @foreach ($products as $product)
                                 <div class="col">
                                     <div class="card h-100 shadow-sm border-0">
-                                        <img src="{{ '/storage/' . $product->image_url }}" 
+                                        <img src="{{ $product->image_url ? (str_starts_with($product->image_url, 'http') ? $product->image_url : '/storage/' . $product->image_url) : '/images/products/default.svg' }}" 
                                              class="card-img-top p-3"
                                              alt="{{ $product->name }}"
                                              style="height: auto; object-fit: contain; background-color: #f9f9f9; border-radius: 0.5rem;">

@@ -41,10 +41,11 @@
                         </div>
                         <div class="form-group">
                             <label>Image</label>
-                            <input ref="image_url" type="file" class="form-control" :disabled="status === 'edit' && form.image_url">
+                            <input ref="image_url" type="file" class="form-control" accept="image/*">
                             <div v-if="form.image_url">
-                                <img :src="'/storage/' + form.image_url" alt="Product Image" width="100" class="mt-2">
+                                <img :src="form.image_url.startsWith('http') ? form.image_url : '/storage/' + form.image_url" alt="Product Image" width="100" class="mt-2">
                             </div>
+                            <small class="text-muted">Leave empty to keep current image</small>
                         </div>
                         
                         <div class="form-group">
@@ -106,7 +107,7 @@
                                 <td>@{{ index + 1 }}</td>
                                 <td>@{{ product.name }}</td>
                                 <td>
-                                    <img :src="'/storage/' + product.image_url" alt="Product Image" width="50">
+                                    <img :src="product.image_url.startsWith('http') ? product.image_url : '/storage/' + product.image_url" alt="Product Image" width="50">
                                 </td>
                                 <td>@{{ product.description }}</td>
                                 <td>@{{ product.category_name }}</td>
@@ -225,13 +226,32 @@
                 formData.append('status', this.form.status);
                 if (this.$refs.image_url.files.length > 0) {
                     formData.append('image_url', this.$refs.image_url.files[0]);
+                    console.log('Image file added to FormData:', this.$refs.image_url.files[0].name);
+                } else {
+                    console.log('No image file selected');
                 }
                 axios.post('/admin/add-products', formData)
-                    .then(() => {
+                    .then((response) => {
+                        console.log('Product added successfully:', response.data);
                         this.resetForm();
                         this.fetchData();
                     })
-                    .catch(err => console.error(err));
+                    .catch(err => {
+                        console.error('Error adding product:', err);
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Error adding product: ' + (err.response?.data?.message || err.message),
+                                timer: 3000,
+                                showConfirmButton: false,
+                                toast: true,
+                                position: 'top-end'
+                            });
+                        } else {
+                            alert('Error adding product: ' + (err.response?.data?.message || err.message));
+                        }
+                    });
             },
             editproducts() {
                 const formData = new FormData();
@@ -244,13 +264,32 @@
                 formData.append('status', this.form.status);
                 if (this.$refs.image_url.files.length > 0) {
                     formData.append('image_url', this.$refs.image_url.files[0]);
+                    console.log('New image file added to FormData:', this.$refs.image_url.files[0].name);
+                } else {
+                    console.log('No new image file selected, keeping existing image');
                 }
                 axios.post('/admin/edit-products', formData)
-                    .then(() => {
+                    .then((response) => {
+                        console.log('Product updated successfully:', response.data);
                         this.resetForm();
                         this.fetchData();
                     })
-                    .catch(err => console.error(err));
+                    .catch(err => {
+                        console.error('Error updating product:', err);
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Error updating product: ' + (err.response?.data?.message || err.message),
+                                timer: 3000,
+                                showConfirmButton: false,
+                                toast: true,
+                                position: 'top-end'
+                            });
+                        } else {
+                            alert('Error updating product: ' + (err.response?.data?.message || err.message));
+                        }
+                    });
             }
         }
     });

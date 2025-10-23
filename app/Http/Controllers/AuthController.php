@@ -19,7 +19,10 @@ class AuthController extends Controller
     public function doLogin(Request $request)
     {
         // dd($request->all());
-        $user = User::where('username', $request->username)->first();
+        // Try to find user by email first, then by name
+        $user = User::where('email', $request->username)
+                   ->orWhere('name', $request->username)
+                   ->first();
     
         if (!$user) {
             return back()->with(key: 'error', value: 'User not found');

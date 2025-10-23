@@ -221,7 +221,19 @@
       })
       .catch((error) => {
           // Handle error during PayPal order creation
-          alert("Failed to initiate PayPal payment.");
+          if (typeof Swal !== 'undefined') {
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Payment Error!',
+                  text: 'Failed to initiate PayPal payment.',
+                  timer: 3000,
+                  showConfirmButton: false,
+                  toast: true,
+                  position: 'top-end'
+              });
+          } else {
+              alert("Failed to initiate PayPal payment.");
+          }
           console.error(error);
       })
       .finally(() => {
@@ -230,7 +242,19 @@
       });
   } else {
       // Alert if received amount is less than total
-      alert("Received amount is less than total!");
+      if (typeof Swal !== 'undefined') {
+          Swal.fire({
+              icon: 'warning',
+              title: 'Amount Mismatch!',
+              text: 'Received amount is less than total!',
+              timer: 3000,
+              showConfirmButton: false,
+              toast: true,
+              position: 'top-end'
+          });
+      } else {
+          alert("Received amount is less than total!");
+      }
   }
 },
 
@@ -244,7 +268,19 @@
       },
       qtyOnchange(index, qty) {
       if (isNaN(parseInt(qty)) || parseInt(qty) < 1) {
-        alert("Enter a valid quantity")
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Invalid Quantity!',
+                text: 'Enter a valid quantity',
+                timer: 3000,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end'
+            });
+        } else {
+            alert("Enter a valid quantity");
+        }
         this.selected_product_list[index].qty = 1
         return
       }
