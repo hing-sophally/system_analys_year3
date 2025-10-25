@@ -76,10 +76,20 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{{ route('frontend.profile') }}">Profile</a></li>
-                                <li><a class="dropdown-item" href="{{ url('admin/dashboard') }}">Dashboard</a></li>
+                                @if(Auth::user()->role !== 'user')
+                                    <li><a class="dropdown-item" href="{{ url('admin/dashboard') }}">Dashboard</a></li>
+                                @endif
                                 <li><a class="dropdown-item" href="{{ route('frontend.orders') }}">My Orders</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{ route('logout') }}">Logout</a></li>
+                                <li>
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        <a class="dropdown-item" href="#" 
+                                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            <i class="fas fa-sign-out-alt"></i> Logout
+                                        </a>
+                                    </form>
+                                </li>
                             </ul>
                         </li>
                     @else
@@ -532,6 +542,12 @@
         
         // Cart and wishlist management functions
         window.addToCart = function(productId, productName, productPrice, productImage) {
+            // Check if user is authenticated
+            @guest
+                window.location.href = '{{ route("login") }}';
+                return;
+            @endguest
+            
             try {
                 console.log('Adding to cart:', { productId, productName, productPrice, productImage });
                 let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -586,6 +602,12 @@
         };
 
         window.addToWishlist = function(productId, productName, productPrice, productImage) {
+            // Check if user is authenticated
+            @guest
+                window.location.href = '{{ route("login") }}';
+                return;
+            @endguest
+            
             try {
                 console.log('Adding to wishlist:', { productId, productName, productPrice, productImage });
                 let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];

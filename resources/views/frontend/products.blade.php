@@ -39,17 +39,9 @@
                             </div>
                         </div>
                         <div class="product-badges position-absolute top-0 end-0 p-2">
-                            @if($product->stock <= 0)
+                            @if($product->discount && $product->discount > 0)
                                 <span class="badge bg-danger">
-                                    <i class="fas fa-times-circle me-1"></i>Out of Stock
-                                </span>
-                            @elseif($product->stock <= 5)
-                                <span class="badge bg-warning">
-                                    <i class="fas fa-exclamation-triangle me-1"></i>Low Stock ({{ $product->stock }})
-                                </span>
-                            @else
-                                <span class="badge bg-success">
-                                    <i class="fas fa-check-circle me-1"></i>In Stock ({{ $product->stock }})
+                                    <i class="fas fa-tag me-1"></i>{{ $product->discount }}% OFF
                                 </span>
                             @endif
                         </div>
@@ -57,11 +49,15 @@
                             <button class="btn btn-light btn-sm me-2" title="Quick View">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button class="btn btn-light btn-sm me-2" title="Add to Wishlist" onclick="addToWishlist({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }}, '{{ $product->image_url ? (str_starts_with($product->image_url, 'http') ? $product->image_url : asset('storage/' . $product->image_url)) : asset('images/products/default.svg') }}')"
-                                {{ $product->stock <= 0 ? 'disabled' : '' }}>
+                            @php
+                                $finalPrice = $product->discount && $product->discount > 0 
+                                    ? $product->price - ($product->price * $product->discount / 100)
+                                    : $product->price;
+                            @endphp
+                            <button class="btn btn-light btn-sm me-2" title="Add to Wishlist" onclick="addToWishlist({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $finalPrice }}, '{{ $product->image_url ? (str_starts_with($product->image_url, 'http') ? $product->image_url : asset('storage/' . $product->image_url)) : asset('images/products/default.svg') }}')">
                                 <i class="fas fa-heart"></i>
                             </button>
-                            <button class="btn btn-dark btn-sm" title="Add to Cart" onclick="addToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }}, '{{ $product->image_url ? (str_starts_with($product->image_url, 'http') ? $product->image_url : asset('storage/' . $product->image_url)) : asset('images/products/default.svg') }}')"
+                            <button class="btn btn-dark btn-sm" title="Add to Cart" onclick="addToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $finalPrice }}, '{{ $product->image_url ? (str_starts_with($product->image_url, 'http') ? $product->image_url : asset('storage/' . $product->image_url)) : asset('images/products/default.svg') }}')"
                                 {{ $product->stock <= 0 ? 'disabled' : '' }}>
                                 <i class="fas fa-shopping-cart"></i>
                             </button>
@@ -73,7 +69,17 @@
                         <div class="mt-auto">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <span class="h6 text-dark">${{ number_format($product->price, 2) }}</span>
+                                    @if($product->discount && $product->discount > 0)
+                                        @php
+                                            $discountedPrice = $product->price - ($product->price * $product->discount / 100);
+                                        @endphp
+                                        <div class="d-flex flex-column">
+                                            <span class="text-muted text-decoration-line-through small">${{ number_format($product->price, 2) }}</span>
+                                            <span class="h5 text-danger fw-bold mb-0">${{ number_format($discountedPrice, 2) }}</span>
+                                        </div>
+                                    @else
+                                        <span class="h6 text-dark">${{ number_format($product->price, 2) }}</span>
+                                    @endif
                                 </div>
                                 <div class="rating">
                                     <i class="fas fa-star text-warning"></i>
@@ -83,7 +89,19 @@
                                     <i class="far fa-star text-warning"></i>
                                 </div>
                             </div>
-                            <small class="text-muted">Stock: {{ $product->stock }} units</small>
+                            @if($product->stock <= 0)
+                                <span class="badge bg-danger">
+                                    <i class="fas fa-times-circle me-1"></i>Out of Stock
+                                </span>
+                            @elseif($product->stock < 10)
+                                <span class="badge bg-warning text-dark">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>Low Stock ({{ $product->stock }} units)
+                                </span>
+                            @else
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle me-1"></i>In Stock
+                                </span>
+                            @endif
                         </div>
                     </div>
                 </div>

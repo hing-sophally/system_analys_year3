@@ -53,6 +53,7 @@ public function fetchproducts()
                 'category_id' => 'required|exists:categories,id', // Ensure category_id exists in the categories table
                 'description' => 'required|string|max:255',
                 'price' => 'required|numeric',
+                'discount' => 'nullable|numeric|min:0|max:100', // Discount percentage (0-100)
                 'stock' => 'required|integer',
                 'status' => 'nullable|boolean',  // Optional, default to 1 (active)
                 'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Only validate if image is provided
@@ -62,6 +63,7 @@ public function fetchproducts()
             $name = $request->name;
             $description = $request->description;
             $price = $request->price;
+            $discount = $request->discount ?? 0;  // Default to 0 if no discount is provided
             $stock = $request->stock;
             $status = $request->status ?? 1;  // Default to 1 if no status is provided
         
@@ -81,6 +83,7 @@ public function fetchproducts()
                     'image_url' => $imagePath,
                     'description' => $description,
                     'price' => $price,
+                    'discount' => $discount,
                     'stock' => $stock,
                     'status' => $status,
                 ]);
@@ -95,6 +98,7 @@ public function fetchproducts()
                 'category_id' => 'required|exists:categories,id',  // Ensure category_id exists in the categories table
                 'description' => 'required|string|max:255',
                 'price' => 'required|numeric',
+                'discount' => 'nullable|numeric|min:0|max:100', // Discount percentage (0-100)
                 'stock' => 'required|integer',
                 'status' => 'nullable|boolean',  // Optional, default to 1 (active)
                 'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -104,6 +108,7 @@ public function fetchproducts()
             $category_id = $request->category_id;
             $description = $request->description;
             $price = $request->price;
+            $discount = $request->discount ?? 0;  // Default to 0 if no discount is provided
             $stock = $request->stock;
             $status = $request->status ?? 1;  // Default to 1 if no status is provided
         
@@ -127,6 +132,7 @@ public function fetchproducts()
                 'image_url' => $imagePath,
                 'description' => $description,
                 'price' => $price,
+                'discount' => $discount,
                 'stock' => $stock,
                 'status' => $status,
             ]);

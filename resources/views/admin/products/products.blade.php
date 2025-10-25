@@ -57,6 +57,11 @@
                             <input v-model="form.price" type="number" step="0.01" class="form-control" required>
                         </div>
                         <div class="form-group">
+                            <label>Discount (%)</label>
+                            <input v-model="form.discount" type="number" step="0.01" min="0" max="100" class="form-control" placeholder="0-100">
+                            <small class="text-muted">Enter discount percentage (0-100). Leave 0 for no discount.</small>
+                        </div>
+                        <div class="form-group">
                             <label>Stock</label>
                             <input v-model="form.stock" type="number" class="form-control" required>
                         </div>
@@ -97,6 +102,7 @@
                                 <th>Description</th>
                                 <th>Category</th> <!-- Updated header -->
                                 <th>Price</th>
+                                <th>Discount (%)</th>
                                 <th>Stock</th>
                                 <th>Status</th>
                                 <th>Action</th>
@@ -111,7 +117,13 @@
                                 </td>
                                 <td>@{{ product.description }}</td>
                                 <td>@{{ product.category_name }}</td>
-                                <td>@{{ product.price }}</td>
+                                <td>$@{{ product.price }}</td>
+                                <td>
+                                    <span v-if="product.discount > 0" class="badge bg-danger">
+                                        @{{ product.discount }}%
+                                    </span>
+                                    <span v-else class="text-muted">-</span>
+                                </td>
                                 <td>@{{ product.stock }}</td>
                                 <td>@{{ product.status == 1 ? 'Active' : 'Inactive' }}</td>
                                 <td>
@@ -148,6 +160,7 @@
                 name: '',
                 description: '',
                 price: '',
+                discount: 0, // Default to 0 (no discount)
                 stock: '',
                 status: 1, // Default to Active
                 image_url: ''
@@ -177,7 +190,7 @@
             },
             resetForm() {
                 this.status = 'add';
-                this.form = { id: null, category_id: '', name: '', description: '', price: '', stock: '', status: 1, image_url: '' };
+                this.form = { id: null, category_id: '', name: '', description: '', price: '', discount: 0, stock: '', status: 1, image_url: '' };
                 if (this.$refs.image_url) {
                     this.$refs.image_url.value = '';
                 }
@@ -189,6 +202,7 @@
                 this.form.name = item.name;
                 this.form.description = item.description;
                 this.form.price = item.price;
+                this.form.discount = item.discount || 0; // Set discount, default to 0
                 this.form.stock = item.stock;
                 this.form.status = item.status;
                 this.form.image_url = item.image_url;
@@ -222,6 +236,7 @@
                 formData.append('name', this.form.name);
                 formData.append('description', this.form.description);
                 formData.append('price', this.form.price);
+                formData.append('discount', this.form.discount || 0);
                 formData.append('stock', this.form.stock);
                 formData.append('status', this.form.status);
                 if (this.$refs.image_url.files.length > 0) {
@@ -260,6 +275,7 @@
                 formData.append('name', this.form.name);
                 formData.append('description', this.form.description);
                 formData.append('price', this.form.price);
+                formData.append('discount', this.form.discount || 0);
                 formData.append('stock', this.form.stock);
                 formData.append('status', this.form.status);
                 if (this.$refs.image_url.files.length > 0) {
